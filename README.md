@@ -24,8 +24,6 @@ The plugin automatically provisions a custom index table `wp_course_index` upon 
 A `CourseSyncListener` keeps this table in perfect sync with the canonical WordPress `wp_posts` and `wp_postmeta` tables by listening to native `save_post` and `updated_post_meta` hooks.
 
 ### Development Commands
-- **Linting:** `composer run lint` (Runs PHPCS with WordPress coding standards)
-- **Static Analysis:** `composer run phpstan` (if configured)
 - **Testing:** `composer run test` (Runs PHPUnit test suite)
 
 ### Architectural Decisions
