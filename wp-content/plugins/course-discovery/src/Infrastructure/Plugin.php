@@ -113,21 +113,12 @@ final class Plugin
         $this->getShortcode()->register();
     }
 
-    public function enqueueAssets(): void
-    {
-        wp_enqueue_script(
-            'course-discovery',
-            COURSE_DISCOVERY_URL . 'assets/js/course-finder.js',
-            [],
-            COURSE_DISCOVERY_VERSION,
-            true
-        );
+    /**
+     * Assets are enqueued conditionally by CourseFinderShortcode when the
+     * [course_finder] shortcode is rendered. Nothing to do here globally.
+     */
+    public function enqueueAssets(): void {}
 
-        wp_localize_script('course-discovery', 'CourseDiscovery', [
-            'restUrl' => esc_url_raw(rest_url('course-discovery/v1')),
-            'nonce'   => wp_create_nonce('wp_rest'),
-        ]);
-    }
 
     // ── Service Locator (package-private) ─────────────────────────────────────
 

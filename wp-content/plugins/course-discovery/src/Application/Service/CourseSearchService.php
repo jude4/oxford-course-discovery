@@ -55,15 +55,11 @@ final class CourseSearchService
     /**
      * Retrieve all available filter options for populating the UI dropdowns.
      *
-     * Returns an associative array with:
-     *   - 'providers'   => array<int, string>  (id => name)
-     *   - 'locations'   => string[]
-     *   - 'start_dates' => string[]  (in "January-2025" display format, chronological)
-     *
      * @return array{
      *   providers: array<int, string>,
      *   locations: string[],
      *   start_dates: string[],
+     *   categories: array<int, array{id: int, name: string, parent: int}>,
      * }
      */
     public function getFilterOptions(): array
@@ -73,12 +69,11 @@ final class CourseSearchService
         return [
             'providers'   => $this->repository->findAllProviders(),
             'locations'   => $this->repository->findAllLocations(),
-            // Convert StartMonth VOs to the display string "January-2025".
-            // Chronological order is guaranteed by the repository.
             'start_dates' => array_map(
                 static fn (StartMonth $sm): string => (string) $sm,
                 $startDates
             ),
+            'categories'  => $this->repository->findAllCategories(),
         ];
     }
 

@@ -81,4 +81,11 @@ interface CourseRepositoryInterface
      * @return StartMonth[] Chronological ascending order.
      */
     public function findAllStartDates(): array;
+
+    /**
+     * Return all course categories for the filter UI.
+     *
+     * @return array<int, array{id: int, name: string, parent: int}>
+     */
+    public function findAllCategories(): array;
 }

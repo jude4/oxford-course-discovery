@@ -241,6 +241,34 @@ final class WpCourseRepository implements CourseRepositoryInterface
         return array_values($parsed);
     }
 
+    /**
+     * Return all course_category terms for the filter UI.
+     *
+     * @return array<int, array{id: int, name: string, parent: int}>
+     */
+    public function findAllCategories(): array
+    {
+        $terms = get_terms([
+            'taxonomy'   => 'course_category',
+            'hide_empty' => false,
+            'orderby'    => 'name',
+            'order'      => 'ASC',
+        ]);
+
+        if (is_wp_error($terms) || ! is_array($terms)) {
+            return [];
+        }
+
+        return array_map(
+            static fn (\WP_Term $term): array => [
+                'id'     => $term->term_id,
+                'name'   => $term->name,
+                'parent' => $term->parent,
+            ],
+            $terms
+        );
+    }
+
     // ── Entity Reconstruction ─────────────────────────────────────────────────
 
     /**

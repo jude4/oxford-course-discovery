@@ -1,0 +1,671 @@
+/*
+ * Course Discovery — Stylesheet
+ *
+ * This stylesheet complements Tailwind CSS CDN with:
+ *   - Screen-reader-only utility
+ *   - Combobox dropdown positioning & z-index
+ *   - Skeleton loading animation
+ *   - Focus-visible ring for keyboard users
+ *   - Card hover / transition effects
+ *   - Custom checkbox appearance
+ *   - Badge styles
+ *   - Layout (grid, filter bar, pagination)
+ *
+ * Tailwind utility classes used in course-finder.js HTML are available via
+ * the CDN version loaded by CourseFinderShortcode.
+ */
+
+/* ── Reset / Root ─────────────────────────────────────────────────────────── */
+.cf-root {
+  --cf-primary:       #6366f1;    /* Indigo */
+  --cf-primary-hover: #4f46e5;
+  --cf-secondary:     #0ea5e9;    /* Sky */
+  --cf-success:       #10b981;    /* Emerald */
+  --cf-surface:       #ffffff;
+  --cf-surface-alt:   #f8fafc;
+  --cf-border:        #e2e8f0;
+  --cf-text:          #1e293b;
+  --cf-text-muted:    #64748b;
+  --cf-radius:        0.625rem;
+  --cf-shadow:        0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1);
+  --cf-shadow-lg:     0 10px 25px -5px rgb(0 0 0 / .15), 0 4px 6px -2px rgb(0 0 0 / .08);
+
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--cf-text);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ── Accessibility ────────────────────────────────────────────────────────── */
+.cf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* High-visibility focus ring for keyboard users */
+.cf-root *:focus-visible {
+  outline: 2px solid var(--cf-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Search Bar ───────────────────────────────────────────────────────────── */
+.cf-search-bar {
+  margin-bottom: 1.5rem;
+}
+
+.cf-search-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--cf-surface);
+  border: 1.5px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  box-shadow: var(--cf-shadow);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cf-search-input-group:focus-within {
+  border-color: var(--cf-primary);
+  box-shadow: 0 0 0 3px rgb(99 102 241 / .15);
+}
+
+.cf-search-icon {
+  position: absolute;
+  left: 1rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--cf-text-muted);
+  pointer-events: none;
+}
+
+#cf-text-search {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0.875rem 1rem 0.875rem 2.75rem;
+  font-size: 1rem;
+  color: var(--cf-text);
+}
+
+#cf-text-search::placeholder {
+  color: var(--cf-text-muted);
+}
+
+#cf-search-btn {
+  flex-shrink: 0;
+  margin: 0.375rem;
+  padding: 0.5rem 1.5rem;
+  background: var(--cf-primary);
+  color: #fff;
+  border: none;
+  border-radius: calc(var(--cf-radius) - 2px);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+#cf-search-btn:hover  { background: var(--cf-primary-hover); }
+#cf-search-btn:active { transform: scale(0.97); }
+
+/* ── Filter Bar ───────────────────────────────────────────────────────────── */
+#cf-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  align-items: flex-start;
+}
+
+.cf-filter-slot {
+  position: relative;
+}
+
+.cf-filter-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--cf-text-muted);
+  margin-bottom: 0.375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Combobox ─────────────────────────────────────────────────────────────── */
+.cf-combobox-wrapper {
+  position: relative;
+  min-width: 180px;
+}
+
+.cf-combobox-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background: var(--cf-surface);
+  border: 1.5px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--cf-text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+}
+
+.cf-combobox-trigger:hover {
+  border-color: var(--cf-primary);
+  background: var(--cf-surface-alt);
+}
+
+.cf-combobox-trigger[aria-expanded="true"] {
+  border-color: var(--cf-primary);
+  box-shadow: 0 0 0 3px rgb(99 102 241 / .15);
+}
+
+.cf-combobox-chevron {
+  width: 1rem;
+  height: 1rem;
+  color: var(--cf-text-muted);
+  transition: transform 0.2s ease;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.cf-combobox-trigger[aria-expanded="true"] .cf-combobox-chevron {
+  transform: rotate(180deg);
+}
+
+/* ── Listbox Dropdown ──────────────────────────────────────────────────────── */
+.cf-listbox {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  min-width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  background: var(--cf-surface);
+  border: 1.5px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  box-shadow: var(--cf-shadow-lg);
+  padding: 0.25rem;
+  list-style: none;
+  margin: 0;
+  animation: cf-dropdown-in 0.12s ease;
+}
+
+@keyframes cf-dropdown-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cf-listbox:not([hidden]) {
+  display: block;
+}
+
+.cf-listbox-option {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: calc(var(--cf-radius) - 2px);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  user-select: none;
+}
+
+.cf-listbox-option:hover,
+.cf-listbox-option:focus {
+  background: var(--cf-surface-alt);
+  outline: none;
+}
+
+.cf-listbox-option:focus-visible {
+  outline: 2px solid var(--cf-primary);
+  outline-offset: -2px;
+}
+
+.cf-listbox-option.cf-option--selected {
+  color: var(--cf-primary);
+  background: rgb(99 102 241 / .06);
+}
+
+.cf-option-check {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--cf-primary);
+}
+
+.cf-check-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ── Checkbox Filter ──────────────────────────────────────────────────────── */
+.cf-checkbox-filter {
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 180px;
+}
+
+.cf-checkbox-filter legend {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--cf-text-muted);
+  margin-bottom: 0.375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cf-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--cf-surface);
+  border: 1.5px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  padding: 0.375rem;
+}
+
+.cf-checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4375rem 0.75rem;
+  border-radius: calc(var(--cf-radius) - 2px);
+  cursor: pointer;
+  font-size: 0.9375rem;
+  transition: background 0.1s ease;
+}
+
+.cf-checkbox-option:hover {
+  background: var(--cf-surface-alt);
+}
+
+.cf-checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--cf-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Results Summary ────────────────────────────────────────────────────────── */
+.cf-results-summary {
+  font-size: 0.9375rem;
+  color: var(--cf-text-muted);
+  margin-bottom: 1.25rem;
+  font-weight: 500;
+}
+
+/* ── Course Grid ─────────────────────────────────────────────────────────── */
+#cf-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* ── Course Card ─────────────────────────────────────────────────────────── */
+.cf-card {
+  background: var(--cf-surface);
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  box-shadow: var(--cf-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.cf-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--cf-shadow-lg);
+  border-color: var(--cf-primary);
+}
+
+.cf-card-link {
+  display: block;
+  text-decoration: none;
+}
+
+.cf-card-media {
+  height: 180px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f0f9ff 100%);
+}
+
+.cf-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.cf-card:hover .cf-card-img {
+  transform: scale(1.04);
+}
+
+.cf-card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a5b4fc;
+}
+
+.cf-card-img-placeholder svg {
+  width: 48px;
+  height: 48px;
+}
+
+.cf-card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.625rem;
+}
+
+.cf-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cf-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cf-text);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.cf-card-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cf-card-title-link:hover {
+  color: var(--cf-primary);
+}
+
+.cf-card-desc {
+  font-size: 0.875rem;
+  color: var(--cf-text-muted);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+.cf-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: auto;
+}
+
+.cf-card-footer {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--cf-border);
+  margin-top: 0.25rem;
+}
+
+.cf-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cf-primary);
+  text-decoration: none;
+  transition: gap 0.15s ease, color 0.15s ease;
+}
+
+.cf-card-cta:hover {
+  color: var(--cf-primary-hover);
+  gap: 0.625rem;
+}
+
+.cf-card-cta svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.15s ease;
+}
+
+.cf-card-cta:hover svg {
+  transform: translateX(3px);
+}
+
+/* ── Badges ──────────────────────────────────────────────────────────────── */
+.cf-badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cf-badge--free {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.cf-badge--paid {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+.cf-tag {
+  display: inline-block;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.cf-tag--location {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.cf-tag--date {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* ── Skeleton Loading ────────────────────────────────────────────────────── */
+@keyframes cf-skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.cf-skeleton-pulse {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 800px 100%;
+  animation: cf-skeleton-shimmer 1.5s infinite ease-in-out;
+  border-radius: 4px;
+}
+
+.cf-card--skeleton .cf-card-media {
+  height: 180px;
+}
+
+.cf-skeleton-line {
+  height: 14px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.cf-skeleton-title {
+  height: 20px;
+  width: 70%;
+}
+
+.cf-skeleton-short {
+  width: 40%;
+}
+
+/* ── Empty / Error States ────────────────────────────────────────────────── */
+.cf-empty-state,
+.cf-error-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--cf-text-muted);
+  gap: 1rem;
+}
+
+.cf-empty-state svg {
+  width: 64px;
+  height: 64px;
+  opacity: 0.4;
+}
+
+/* ── Pagination ──────────────────────────────────────────────────────────── */
+.cf-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.cf-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 1.5px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  background: var(--cf-surface);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--cf-text);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.cf-page-btn:hover:not(:disabled) {
+  background: var(--cf-surface-alt);
+  border-color: var(--cf-primary);
+  color: var(--cf-primary);
+}
+
+.cf-page-btn--current {
+  background: var(--cf-primary);
+  border-color: var(--cf-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.cf-page-btn--prev svg,
+.cf-page-btn--next svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.cf-page-btn:disabled,
+.cf-page-btn[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.cf-page-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  color: var(--cf-text-muted);
+}
+
+/* ── Scrollbar styling ───────────────────────────────────────────────────── */
+.cf-listbox::-webkit-scrollbar,
+.cf-checkbox-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cf-listbox::-webkit-scrollbar-track,
+.cf-checkbox-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cf-listbox::-webkit-scrollbar-thumb,
+.cf-checkbox-list::-webkit-scrollbar-thumb {
+  background: var(--cf-border);
+  border-radius: 9999px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .cf-root { padding: 1rem; }
+
+  #cf-filter-bar {
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+
+  .cf-filter-slot,
+  .cf-combobox-wrapper,
+  .cf-checkbox-filter {
+    width: 100%;
+  }
+
+  .cf-listbox {
+    width: 100%;
+  }
+
+  #cf-results-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-card,
+  .cf-card-img,
+  .cf-card-cta,
+  .cf-card-cta svg,
+  .cf-combobox-chevron,
+  .cf-listbox {
+    transition: none;
+    animation: none;
+  }
+
+  .cf-skeleton-pulse {
+    animation: none;
+    background: #f1f5f9;
+  }
+}
