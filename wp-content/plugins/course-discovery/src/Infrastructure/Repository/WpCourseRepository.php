@@ -442,11 +442,17 @@ final class WpCourseRepository implements CourseRepositoryInterface
         $column = $allowedOrderBy[$criteria->orderBy()] ?? 'ci.name';
         $dir    = $criteria->order() === 'DESC' ? 'DESC' : 'ASC';
 
-        // For 'name' the direction is already embedded; for others, append it.
+        $orderSql = "ORDER BY {$column} {$dir}";
         if ($criteria->orderBy() === 'name') {
-            return "ORDER BY {$column}";
+            $orderSql = "ORDER BY {$column}";
         }
 
-        return "ORDER BY {$column} {$dir}";
+        /**
+         * Filter the generated ORDER BY SQL clause for the course search query.
+         *
+         * @param string               $orderSql The generated SQL.
+         * @param CourseSearchCriteria $criteria The domain search criteria.
+         */
+        return (string) apply_filters('course_discovery_search_order_sql', $orderSql, $criteria);
     }
 }

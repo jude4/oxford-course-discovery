@@ -66,7 +66,7 @@ final class CourseSearchService
     {
         $startDates = $this->repository->findAllStartDates();
 
-        return [
+        $options = [
             'providers'   => $this->repository->findAllProviders(),
             'locations'   => $this->repository->findAllLocations(),
             'start_dates' => array_map(
@@ -75,6 +75,13 @@ final class CourseSearchService
             ),
             'categories'  => $this->repository->findAllCategories(),
         ];
+
+        /**
+         * Filter the available options for the frontend search UI.
+         *
+         * @param array $options The filter options arrays.
+         */
+        return (array) apply_filters('course_discovery_filter_options', $options);
     }
 
     // ── Private ───────────────────────────────────────────────────────────────
@@ -95,7 +102,7 @@ final class CourseSearchService
             }
         }
 
-        return CourseSearchCriteria::create(
+        $criteria = CourseSearchCriteria::create(
             textSearch:  $query->textSearch,
             providerIds: $query->providerIds,
             locations:   $query->locations,
@@ -106,5 +113,13 @@ final class CourseSearchService
             orderBy:     $query->orderBy,
             order:       $query->order,
         );
+
+        /**
+         * Transform the domain search criteria before execution.
+         *
+         * @param CourseSearchCriteria $criteria The domain search criteria.
+         * @param CourseSearchQuery    $query    The raw REST request data.
+         */
+        return apply_filters('course_discovery_search_criteria', $criteria, $query);
     }
 }
