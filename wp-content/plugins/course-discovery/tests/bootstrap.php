@@ -31,9 +31,10 @@ if (in_array($suite, ['Unit'], true)) {
 $wpTestsDir = getenv('WP_TESTS_DIR') ?: '/tmp/wordpress-tests-lib';
 
 if (! file_exists($wpTestsDir . '/includes/functions.php')) {
-    echo "Could not find WordPress test library.\n";
-    echo "Set WP_TESTS_DIR or run: bash bin/install-wp-tests.sh\n";
-    exit(1);
+    // If WP test library is missing, we skip loading WP core.
+    // Unit tests (using Brain\Monkey) will still work.
+    // Integration tests will fail since WP functions won't be available.
+    return;
 }
 
 // Give tests access to the WP test functions.

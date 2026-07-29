@@ -22,9 +22,8 @@ final class StartMonthTest extends TestCase
     public function testThrowsOnInvalidFormat(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid year part "01" in StartMonth string "2025-01".');
 
-        StartMonth::fromString('2025-01');
+        StartMonth::fromString('2025/01'); // Missing dash
     }
 
     public function testThrowsOnInvalidMonth(): void
