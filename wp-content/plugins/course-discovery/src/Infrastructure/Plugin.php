@@ -55,7 +55,10 @@ final class Plugin
 
         add_action('init',          [$this, 'registerPostTypes'],   5);
         add_action('init',          [$this, 'registerTaxonomies'],  5);
-        add_action('acf/init',      [$this, 'registerAcfFields'],  10);
+        
+        // Native Meta Boxes
+        $this->getNativeMetaBoxRegistrar()->register();
+
         add_action('rest_api_init', [$this, 'registerRestRoutes']);
         add_action('init',          [$this, 'registerShortcodes'], 10);
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
@@ -96,11 +99,6 @@ final class Plugin
     public function registerTaxonomies(): void
     {
         $this->getPostTypeRegistrar()->registerTaxonomies();
-    }
-
-    public function registerAcfFields(): void
-    {
-        $this->getAcfRegistrar()->register();
     }
 
     public function registerRestRoutes(): void
@@ -164,13 +162,13 @@ final class Plugin
         return $this->services['migration']; // @phpstan-ignore-line
     }
 
-    private function getAcfRegistrar(): \Oxford\CourseDiscovery\Infrastructure\Acf\AcfFieldGroupRegistrar
+    private function getNativeMetaBoxRegistrar(): \Oxford\CourseDiscovery\Infrastructure\WordPress\NativeMetaBoxRegistrar
     {
-        if (! isset($this->services['acf_registrar'])) {
-            $this->services['acf_registrar'] = new \Oxford\CourseDiscovery\Infrastructure\Acf\AcfFieldGroupRegistrar();
+        if (! isset($this->services['native_meta_box_registrar'])) {
+            $this->services['native_meta_box_registrar'] = new \Oxford\CourseDiscovery\Infrastructure\WordPress\NativeMetaBoxRegistrar();
         }
 
-        return $this->services['acf_registrar']; // @phpstan-ignore-line
+        return $this->services['native_meta_box_registrar']; // @phpstan-ignore-line
     }
 
     private function getPostTypeRegistrar(): \Oxford\CourseDiscovery\Infrastructure\PostType\PostTypeRegistrar

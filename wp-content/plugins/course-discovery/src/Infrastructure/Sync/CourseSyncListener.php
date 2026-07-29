@@ -60,6 +60,11 @@ final class CourseSyncListener
 
         // Remove from index when a course is trashed / deleted / unpublished.
         add_action('transition_post_status', [$this, 'onStatusTransition'], 10, 3);
+
+        // Gutenberg REST API updates _thumbnail_id after save_post.
+        add_action('added_post_meta',   [$this, 'onPostMetaChange'], 10, 4);
+        add_action('updated_post_meta', [$this, 'onPostMetaChange'], 10, 4);
+        add_action('deleted_post_meta', [$this, 'onPostMetaChange'], 10, 4);
     }
 
     // ── Hook Handlers ─────────────────────────────────────────────────────────
@@ -166,6 +171,20 @@ final class CourseSyncListener
         }
     }
 
+    /**
+     * Listen for featured image updates via the REST API / Block Editor.
+     * Gutenberg updates _thumbnail_id via the REST API *after* save_post fires.
+     */
+    public function onPostMetaChange($metaId, int $postId, string $metaKey, mixed $metaValue): void
+    {
+        if ($metaKey === '_thumbnail_id') {
+            // Check if post is a course
+            if (get_post_type($postId) === 'course') {
+                $this->syncCourse($postId);
+            }
+        }
+    }
+
     // ── Record Building ────────────────────────────────────────────────────────
 
     private function buildRecord(\WP_Post $post): CourseIndexRecord
@@ -173,11 +192,11 @@ final class CourseSyncListener
         $postId = $post->ID;
 
         // ── Text fields ───────────────────────────────────────────────────────
-        $shortDesc   = $this->getAcfOrMeta($postId, 'course_short_description', '');
-        $longDesc    = $this->getAcfOrMeta($postId, 'course_long_description', '');
+        $shortDesc   = $this->getMeta($postId, 'course_short_description', '');
+        $longDesc    = $this->getMeta($postId, 'course_long_description', '');
 
         // ── Price ─────────────────────────────────────────────────────────────
-        $rawPrice    = $this->getAcfOrMeta($postId, 'course_price', 0);
+        $rawPrice    = $this->getMeta($postId, 'course_price', 0);
         $price       = max(0.0, (float) $rawPrice);
 
         // ── Instructors ───────────────────────────────────────────────────────
@@ -223,41 +242,21 @@ final class CourseSyncListener
     }
 
     /**
-     * Read an ACF field value, falling back to get_post_meta() if ACF is absent.
+     * Get post meta directly, as ACF is no longer used.
      */
-    private function getAcfOrMeta(int $postId, string $fieldName, mixed $default): mixed
+    private function getMeta(int $postId, string $fieldName, mixed $default = null): mixed
     {
-        if (function_exists('get_field')) {
-            $value = get_field($fieldName, $postId);
-
-            return $value !== null && $value !== false ? $value : $default;
-        }
-
         $value = get_post_meta($postId, $fieldName, true);
-
         return $value !== '' && $value !== false ? $value : $default;
     }
 
     /**
-     * Retrieve a list of post IDs from an ACF relationship field.
-     *
-     * ACF relationship fields return an array of post IDs when return_format='id'.
+     * Retrieve a list of post IDs from a relationship field.
      *
      * @return int[]
      */
     private function getRelationshipIds(int $postId, string $fieldName): array
     {
-        if (function_exists('get_field')) {
-            $value = get_field($fieldName, $postId);
-
-            if (is_array($value)) {
-                return array_map('intval', $value);
-            }
-
-            return [];
-        }
-
-        // Fallback: stored as serialised array in postmeta.
         $raw = get_post_meta($postId, $fieldName, true);
 
         if (is_array($raw)) {
@@ -279,7 +278,7 @@ final class CourseSyncListener
         $locations = [];
 
         foreach ($providerIds as $providerId) {
-            $location = $this->getAcfOrMeta($providerId, 'provider_location', '');
+            $location = $this->getMeta($providerId, 'provider_location', '');
 
             if (is_string($location) && trim($location) !== '') {
                 $locations[] = trim($location);
@@ -299,28 +298,28 @@ final class CourseSyncListener
      */
     private function buildStartDatesCsv(int $postId): string
     {
-        $repeater = [];
+        $rawDates = get_post_meta($postId, 'course_start_dates', true);
 
-        if (function_exists('get_field')) {
-            $repeater = get_field('course_start_dates', $postId) ?: [];
-        } else {
-            $raw = get_post_meta($postId, 'course_start_dates', true);
-            if (is_array($raw)) {
-                $repeater = $raw;
+        if (! is_array($rawDates)) {
+            // Backwards compatibility with the old text area / newline format
+            if (is_string($rawDates) && $rawDates !== '') {
+                $rawDates = explode("\n", $rawDates);
+            } else {
+                return '';
             }
         }
 
         $parsed = [];
 
-        foreach ($repeater as $row) {
-            $raw = $row['start_date_value'] ?? '';
+        foreach ($rawDates as $raw) {
+            $raw = trim((string)$raw);
 
-            if (! is_string($raw) || trim($raw) === '') {
+            if ($raw === '') {
                 continue;
             }
 
             try {
-                $startMonth = StartMonth::fromString(trim($raw));
+                $startMonth = StartMonth::fromString($raw);
                 $parsed[]   = $startMonth->toStorageFormat(); // YYYY-MM
             } catch (\InvalidArgumentException) {
                 // Skip unparseable entries — log for debugging in WP_DEBUG mode.
@@ -355,19 +354,7 @@ final class CourseSyncListener
         $data    = $record->toDbArray();
         $formats = $record->toDbFormats();
 
-        // Attempt insert first.
-        $inserted = $wpdb->insert($table, $data, $formats);
-
-        if ($inserted === false) {
-            // Row likely already exists — perform an update.
-            $wpdb->update(
-                $table,
-                $data,
-                [Schema::COL_POST_ID => $record->postId],
-                $formats,
-                ['%d']
-            );
-        }
+        $wpdb->replace($table, $data, $formats);
     }
 
     /**

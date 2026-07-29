@@ -71,7 +71,7 @@ final class CourseSearchController
 
         $result = $this->searchService->search($query);
 
-        $courses = $result->courses()->map([$this, 'serializeCourse']);
+        $courses = $result->courses()->map(fn($course) => $this->serializeCourse($course));
 
         return new \WP_REST_Response([
             'courses'     => $courses,

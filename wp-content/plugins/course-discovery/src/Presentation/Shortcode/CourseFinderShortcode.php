@@ -133,10 +133,10 @@ final class CourseFinderShortcode
                     aria-label="<?php esc_attr_e('Course filters', 'course-discovery'); ?>"
                 >
                     <!-- JS renders individual filter controls here -->
-                    <div id="cf-filter-providers"  class="cf-filter-slot" data-filter="providers"  data-label="<?php esc_attr_e('Providers', 'course-discovery'); ?>" data-type="checkbox"></div>
+                    <div id="cf-filter-providers"  class="cf-filter-slot" data-filter="providers"  data-label="<?php esc_attr_e('Providers', 'course-discovery'); ?>" data-type="combobox"></div>
                     <div id="cf-filter-locations"  class="cf-filter-slot" data-filter="locations"  data-label="<?php esc_attr_e('Location', 'course-discovery'); ?>"  data-type="combobox"></div>
                     <div id="cf-filter-start-dates" class="cf-filter-slot" data-filter="start_dates" data-label="<?php esc_attr_e('Start Date', 'course-discovery'); ?>" data-type="combobox"></div>
-                    <div id="cf-filter-categories" class="cf-filter-slot" data-filter="categories" data-label="<?php esc_attr_e('Categories', 'course-discovery'); ?>" data-type="checkbox"></div>
+                    <div id="cf-filter-categories" class="cf-filter-slot" data-filter="categories" data-label="<?php esc_attr_e('Categories', 'course-discovery'); ?>" data-type="combobox"></div>
 
                     <!-- Active filter tags will be injected by JS -->
                     <div id="cf-active-filters" aria-label="<?php esc_attr_e('Active filters', 'course-discovery'); ?>" aria-live="polite"></div>

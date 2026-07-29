@@ -98,7 +98,16 @@ final class StartMonth implements \Stringable
             );
         }
 
-        [$monthPart, $yearPart] = explode('-', $value, 2);
+        [$part1, $part2] = explode('-', $value, 2);
+
+        // Detect if YYYY-MM format
+        if (is_numeric($part1) && (int) $part1 >= 1900) {
+            $yearPart  = $part1;
+            $monthPart = $part2;
+        } else {
+            $monthPart = $part1;
+            $yearPart  = $part2;
+        }
 
         $year = (int) trim($yearPart);
         if ($year < 1900) {
@@ -107,7 +116,7 @@ final class StartMonth implements \Stringable
             );
         }
 
-        $monthPart  = strtolower(trim($monthPart));
+        $monthPart  = strtolower(trim((string) $monthPart));
         $monthValue = is_numeric($monthPart)
             ? (int) $monthPart
             : (self::MONTH_NAME_MAP[$monthPart] ?? null);
