@@ -1,0 +1,113 @@
+[
+  {
+    "key": "group_course_fields",
+    "title": "Course Details",
+    "fields": [
+      {
+        "key": "field_course_short_description",
+        "label": "Short Description",
+        "name": "course_short_description",
+        "type": "textarea",
+        "instructions": "A brief summary of the course (displayed on listing cards). Max 300 characters recommended.",
+        "required": 0,
+        "rows": 3,
+        "wrapper": { "width": "100", "class": "", "id": "" }
+      },
+      {
+        "key": "field_course_long_description",
+        "label": "Long Description",
+        "name": "course_long_description",
+        "type": "wysiwyg",
+        "instructions": "Full course description displayed on the course detail page.",
+        "required": 0,
+        "tabs": "all",
+        "toolbar": "full",
+        "media_upload": 1,
+        "delay": 0
+      },
+      {
+        "key": "field_course_price",
+        "label": "Price (\u00a3)",
+        "name": "course_price",
+        "type": "number",
+        "instructions": "Enter 0 for free courses. Do not include currency symbols.",
+        "required": 1,
+        "default_value": 0,
+        "min": 0,
+        "step": "0.01",
+        "prepend": "\u00a3",
+        "wrapper": { "width": "33", "class": "", "id": "" }
+      },
+      {
+        "key": "field_course_instructors",
+        "label": "Instructors",
+        "name": "course_instructors",
+        "type": "relationship",
+        "instructions": "Link one or more instructors to this course.",
+        "required": 0,
+        "post_type": ["instructor"],
+        "taxonomy": [],
+        "filters": ["search"],
+        "elements": ["featured_image"],
+        "min": "",
+        "max": "",
+        "return_format": "id"
+      },
+      {
+        "key": "field_course_providers",
+        "label": "Providers",
+        "name": "course_providers",
+        "type": "relationship",
+        "instructions": "Link one or more provider (partner) institutions. Locations are derived from the provider's own location field.",
+        "required": 0,
+        "post_type": ["provider"],
+        "taxonomy": [],
+        "filters": ["search"],
+        "elements": [],
+        "min": "",
+        "max": "",
+        "return_format": "id"
+      },
+      {
+        "key": "field_course_start_dates",
+        "label": "Start Dates",
+        "name": "course_start_dates",
+        "type": "repeater",
+        "instructions": "Add one or more start dates. Enter in Month-Year format (e.g. January-2025).",
+        "required": 0,
+        "min": 0,
+        "max": 0,
+        "layout": "table",
+        "button_label": "Add Start Date",
+        "sub_fields": [
+          {
+            "key": "field_course_start_dates_value",
+            "label": "Start Date",
+            "name": "start_date_value",
+            "type": "text",
+            "instructions": "Format: Month-Year (e.g. January-2025, Sep-2025, 09-2025)",
+            "required": 1,
+            "placeholder": "January-2025",
+            "wrapper": { "width": "100", "class": "", "id": "" }
+          }
+        ]
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "post_type",
+          "operator": "==",
+          "value": "course"
+        }
+      ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "All structured data fields for the Course post type."
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "key": "group_instructor_fields",
+    "title": "Instructor Details",
+    "fields": [
+      {
+        "key": "field_instructor_title",
+        "label": "Title / Role",
+        "name": "instructor_title",
+        "type": "text",
+        "instructions": "e.g. \"Professor of Computer Science\" or \"Senior Lecturer\".",
+        "required": 0,
+        "placeholder": "Senior Lecturer",
+        "wrapper": { "width": "50", "class": "", "id": "" }
+      },
+      {
+        "key": "field_instructor_bio",
+        "label": "Biography",
+        "name": "instructor_bio",
+        "type": "textarea",
+        "instructions": "A short professional biography.",
+        "required": 0,
+        "rows": 5,
+        "wrapper": { "width": "100", "class": "", "id": "" }
+      },
+      {
+        "key": "field_instructor_photo",
+        "label": "Profile Photo",
+        "name": "instructor_photo",
+        "type": "image",
+        "instructions": "Square photo recommended. Min 400x400px.",
+        "required": 0,
+        "return_format": "array",
+        "preview_size": "medium",
+        "library": "all",
+        "wrapper": { "width": "50", "class": "", "id": "" }
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "post_type",
+          "operator": "==",
+          "value": "instructor"
+        }
+      ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "Structured data fields for instructor profiles."
+  }
+]

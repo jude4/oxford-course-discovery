@@ -53,12 +53,15 @@ final class Plugin
         register_activation_hook(COURSE_DISCOVERY_FILE,   [$this, 'onActivation']);
         register_deactivation_hook(COURSE_DISCOVERY_FILE, [$this, 'onDeactivation']);
 
-        add_action('init',       [$this, 'registerPostTypes'],   5);
-        add_action('init',       [$this, 'registerTaxonomies'],  5);
+        add_action('init',          [$this, 'registerPostTypes'],   5);
+        add_action('init',          [$this, 'registerTaxonomies'],  5);
+        add_action('acf/init',      [$this, 'registerAcfFields'],  10);
         add_action('rest_api_init', [$this, 'registerRestRoutes']);
-        add_action('init',       [$this, 'registerShortcodes'], 10);
-        add_action('save_post',  [$this, 'onSavePost'], 10, 3);
+        add_action('init',          [$this, 'registerShortcodes'], 10);
         add_action('wp_enqueue_scripts', [$this, 'enqueueAssets']);
+
+        // Sync listener registers its own hooks (acf/save_post + fallbacks).
+        $this->getSyncListener()->registerHooks();
 
         /**
          * Allow third-party plugins to register additional services or swap
@@ -95,6 +98,11 @@ final class Plugin
         $this->getPostTypeRegistrar()->registerTaxonomies();
     }
 
+    public function registerAcfFields(): void
+    {
+        $this->getAcfRegistrar()->register();
+    }
+
     public function registerRestRoutes(): void
     {
         $this->getRestController()->registerRoutes();
@@ -103,12 +111,6 @@ final class Plugin
     public function registerShortcodes(): void
     {
         $this->getShortcode()->register();
-    }
-
-    /** @param \WP_Post $post */
-    public function onSavePost(int $postId, \WP_Post $post, bool $update): void
-    {
-        $this->getSyncListener()->handle($postId, $post, $update);
     }
 
     public function enqueueAssets(): void
@@ -169,6 +171,15 @@ final class Plugin
         }
 
         return $this->services['migration']; // @phpstan-ignore-line
+    }
+
+    private function getAcfRegistrar(): \Oxford\CourseDiscovery\Infrastructure\Acf\AcfFieldGroupRegistrar
+    {
+        if (! isset($this->services['acf_registrar'])) {
+            $this->services['acf_registrar'] = new \Oxford\CourseDiscovery\Infrastructure\Acf\AcfFieldGroupRegistrar();
+        }
+
+        return $this->services['acf_registrar']; // @phpstan-ignore-line
     }
 
     private function getPostTypeRegistrar(): \Oxford\CourseDiscovery\Infrastructure\PostType\PostTypeRegistrar
