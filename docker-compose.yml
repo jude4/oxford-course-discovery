@@ -1,0 +1,102 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: course_discovery_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
+      MYSQL_USER: ${MYSQL_USER:-wordpress}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wordpress}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - course_discovery_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  wordpress:
+    image: wordpress:6.5-php8.2-apache
+    container_name: course_discovery_wp
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${WP_PORT:-8080}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE:-wordpress}
+      WORDPRESS_DB_USER: ${MYSQL_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:-wordpress}
+      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG:-1}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', false);
+        define('SCRIPT_DEBUG', true);
+    volumes:
+      - wp_data:/var/www/html
+      - ./wp-content/plugins/course-discovery:/var/www/html/wp-content/plugins/course-discovery
+      - ./wp-content/themes:/var/www/html/wp-content/themes
+    networks:
+      - course_discovery_net
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    container_name: course_discovery_pma
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "${PMA_PORT:-8081}:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: ${MYSQL_USER:-wordpress}
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-wordpress}
+    networks:
+      - course_discovery_net
+
+  composer:
+    image: composer:2.7
+    container_name: course_discovery_composer
+    working_dir: /app
+    volumes:
+      - ./wp-content/plugins/course-discovery:/app
+    command: ["composer", "install", "--no-interaction", "--prefer-dist"]
+    networks:
+      - course_discovery_net
+    profiles:
+      - tools
+
+  phpunit:
+    image: php:8.2-cli
+    container_name: course_discovery_phpunit
+    working_dir: /app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WP_TESTS_DB_HOST: db
+      WP_TESTS_DB_NAME: ${MYSQL_TESTS_DATABASE:-wordpress_tests}
+      WP_TESTS_DB_USER: ${MYSQL_USER:-wordpress}
+      WP_TESTS_DB_PASSWORD: ${MYSQL_PASSWORD:-wordpress}
+      WP_TESTS_TABLE_PREFIX: wptests_
+    volumes:
+      - ./wp-content/plugins/course-discovery:/app
+    command: ["php", "vendor/bin/phpunit"]
+    networks:
+      - course_discovery_net
+    profiles:
+      - tools
+
+volumes:
+  db_data:
+  wp_data:
+
+networks:
+  course_discovery_net:
+    driver: bridge

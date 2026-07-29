@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="tests/bootstrap.php"
+    colors="true"
+    verbose="true"
+    stopOnFailure="false"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <report>
+            <html outputDirectory="tests/coverage/html"/>
+            <clover outputFile="tests/coverage/clover.xml"/>
+        </report>
+    </coverage>
+
+    <php>
+        <env name="WP_TESTS_DB_HOST"     value="127.0.0.1"/>
+        <env name="WP_TESTS_DB_NAME"     value="wordpress_tests"/>
+        <env name="WP_TESTS_DB_USER"     value="wordpress"/>
+        <env name="WP_TESTS_DB_PASSWORD" value="wordpress"/>
+        <env name="WP_TESTS_TABLE_PREFIX" value="wptests_"/>
+    </php>
+</phpunit>

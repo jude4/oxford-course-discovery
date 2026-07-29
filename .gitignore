@@ -1,0 +1,26 @@
+# ── Dependencies ────────────────────────────────────────────
+vendor/
+wp-content/plugins/course-discovery/vendor/
+
+# ── WordPress core (not tracked) ────────────────────────────
+wp-content/uploads/
+wp-content/upgrade/
+
+# ── Environment ─────────────────────────────────────────────
+.env
+
+# ── Logs ────────────────────────────────────────────────────
+*.log
+wp-content/debug.log
+
+# ── OS / Editor ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── PHPUnit cache ───────────────────────────────────────────
+.phpunit.cache/
+.phpunit.result.cache
