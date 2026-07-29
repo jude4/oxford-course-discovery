@@ -191,10 +191,21 @@ final class Plugin
         return $this->services['post_type_registrar']; // @phpstan-ignore-line
     }
 
+    private function getFilterPipeline(): \Oxford\CourseDiscovery\Infrastructure\Filter\FilterPipeline
+    {
+        if (! isset($this->services['filter_pipeline'])) {
+            $this->services['filter_pipeline'] = new \Oxford\CourseDiscovery\Infrastructure\Filter\FilterPipeline();
+        }
+
+        return $this->services['filter_pipeline']; // @phpstan-ignore-line
+    }
+
     private function getRepository(): \Oxford\CourseDiscovery\Domain\Repository\CourseRepositoryInterface
     {
         if (! isset($this->services['repository'])) {
-            $this->services['repository'] = new \Oxford\CourseDiscovery\Infrastructure\Repository\WpCourseRepository();
+            $this->services['repository'] = new \Oxford\CourseDiscovery\Infrastructure\Repository\WpCourseRepository(
+                $this->getFilterPipeline()
+            );
         }
 
         return $this->services['repository']; // @phpstan-ignore-line
