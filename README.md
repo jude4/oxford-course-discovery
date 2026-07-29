@@ -24,7 +24,6 @@ The plugin automatically provisions a custom index table `wp_course_index` upon 
 A `CourseSyncListener` keeps this table in perfect sync with the canonical WordPress `wp_posts` and `wp_postmeta` tables by listening to native `save_post` and `updated_post_meta` hooks.
 
 ### Development Commands
-Since this is a dockerized environment, you can run development commands via the provided Docker profiles without needing PHP or Composer installed locally on your host machine.
 
 - **Run PHPUnit Tests:**
   `docker-compose --profile tools run --rm phpunit`
